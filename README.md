@@ -1,6 +1,7 @@
+<<<<<<< HEAD
 # Deploying Microservices on Amazon EKS
 
-Infrastructure-as-code and Helm assets for running a WordPress-based workload on an existing Amazon EKS cluster.
+Infrastructure-as-code plus Helm charts for deploying a WordPress microservice stack on Amazon EKS, including autoscaling examples and gp3-backed storage. The repository packages Terraform data sources with reusable Helm assets to run workloads on an existing cluster.
 
 ## Repository Structure
 
@@ -32,3 +33,7 @@ Infrastructure-as-code and Helm assets for running a WordPress-based workload on
 - Sensitive secrets (e.g., database passwords) are stored in plain values for demonstration. Replace them with secure secrets management (Kubernetes Secrets, SSM Parameter Store, etc.) before production use.
 
 
+=======
+# Deploying-Microservices-on-EKS
+Infrastructure-as-code plus Helm charts for deploying a WordPress microservice stack on Amazon EKS, including autoscaling examples and gp3-backed storage.
+>>>>>>> origin/main
