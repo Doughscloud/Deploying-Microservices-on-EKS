@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-wordpress
+  labels:
+    app: quick-wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quick-wordpress
+  template:
+    metadata:
+      labels:
+        app: quick-wordpress
+    spec:
+      containers:
+      - name: wordpress
+        image: wordpress:6.4
+        ports:
+        - containerPort: 80
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: "quick-mariadb"
+        - name: WORDPRESS_DB_USER
+          value: "wordpress"
+        - name: WORDPRESS_DB_PASSWORD
+          value: "wordpress123"
+        - name: WORDPRESS_DB_NAME
+          value: "wordpress"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-mariadb
+  labels:
+    app: quick-mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quick-mariadb
+  template:
+    metadata:
+      labels:
+        app: quick-mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.11
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root123"
+        - name: MYSQL_DATABASE
+          value: "wordpress"
+        - name: MYSQL_USER
+          value: "wordpress"
+        - name: MYSQL_PASSWORD
+          value: "wordpress123"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quick-wordpress
+spec:
+  selector:
+    app: quick-wordpress
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quick-mariadb
+spec:
+  selector:
+    app: quick-mariadb
+  ports:
+  - port: 3306
+    targetPort: 3306
+

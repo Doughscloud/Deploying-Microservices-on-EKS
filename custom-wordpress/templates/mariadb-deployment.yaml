@@ -1,0 +1,78 @@
+{{- if .Values.mariadb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "custom-wordpress.fullname" . }}-mariadb
+  labels:
+    {{- include "custom-wordpress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "custom-wordpress.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mariadb
+  template:
+    metadata:
+      labels:
+        {{- include "custom-wordpress.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "{{ .Values.mariadb.rootPassword }}"
+            - name: MYSQL_DATABASE
+              value: "{{ .Values.mariadb.database }}"
+            - name: MYSQL_USER
+              value: "{{ .Values.mariadb.username }}"
+            - name: MYSQL_PASSWORD
+              value: "{{ .Values.mariadb.password }}"
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - mysql
+                - -h
+                - localhost
+                - -u
+                - root
+                - -p{{ .Values.mariadb.rootPassword }}
+                - -e
+                - "SELECT 1"
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          {{- if .Values.mariadb.persistence.enabled }}
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+          {{- end }}
+      {{- if .Values.mariadb.persistence.enabled }}
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: {{ include "custom-wordpress.fullname" . }}-mariadb
+      {{- end }}
+{{- end }}
+

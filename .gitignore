@@ -1,0 +1,28 @@
+# Terraform state
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.tfstate
+
+# Terraform variables (override)
+*.tfvars.json
+terraform.tfvars.example
+
+# eksctl binaries and archives
+/eksctl/eksctl
+/eksctl.zip
+
+# Helm artifacts
+charts/*
+*.tgz
+
+# macOS metadata
+.DS_Store
+
+# IDE directories
+.idea/
+.vscode/
+
+

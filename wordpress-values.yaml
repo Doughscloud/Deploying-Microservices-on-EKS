@@ -1,0 +1,95 @@
+# WordPress deployment configuration for Bitnami Helm chart
+
+# WordPress configuration
+wordpressUsername: admin
+wordpressPassword: "admin123"
+wordpressEmail: admin@example.com
+wordpressFirstName: Admin
+wordpressLastName: User
+wordpressBlogName: "My WordPress Site"
+
+# Use official WordPress images instead of Bitnami
+image:
+  registry: docker.io
+  repository: wordpress
+  tag: "6.4"
+  pullPolicy: IfNotPresent
+
+# Replica count
+replicaCount: 1
+
+# Service configuration
+service:
+  type: LoadBalancer
+  ports:
+    http: 80
+
+# Ingress configuration
+ingress:
+  enabled: true
+  ingressClassName: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hostname: wordpress.local
+
+# Resource limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Persistent storage
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "ebs-immediate"
+
+# Auto-scaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+
+# MariaDB (MySQL alternative) configuration
+mariadb:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: mariadb
+    tag: "10.11"
+  auth:
+    rootPassword: "root123"
+    database: "wordpress"
+    username: "wordpress"
+    password: "wordpress123"
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "ebs-immediate"
+
+# Metrics for monitoring
+metrics:
+  enabled: false
+
+# Node affinity to ensure pods are scheduled properly
+nodeAffinityPreset:
+  type: "soft"
+  key: "kubernetes.io/arch"
+  values:
+    - "amd64"
+
+# Pod disruption budget for high availability
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Update strategy
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
